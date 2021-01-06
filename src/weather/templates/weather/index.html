@@ -8,10 +8,21 @@
 </head>
 
 <body>
-    <h1>Weather App</h1>
-    {{ city }} <br>
-    {{ temp }} <br>
-    {{ description }}
+    <h1>Weather App</h1> <br>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">Add</button>
+
+    </form> <br>
+    {% for i in city_data %}
+    {{ i.city }} <br>
+    <img src="http://openweathermap.org/img/w/{{ i.icon }}.png" alt="Image"> <br>
+    {{ i.temp }} <br>
+    {{ i.description }} <br>
+    <hr>
+
+    {% endfor %}
 </body>
 
 </html>
