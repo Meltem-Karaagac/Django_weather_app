@@ -1,10 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from decouple import config
 import requests
 from pprint import pprint
 
 from .forms import CityForm
 from .models import City
+from django.contrib import messages
 
 
 def index(request):
@@ -16,10 +17,27 @@ def index(request):
     # content = r.json()
     # print(type(a))
     # pprint(a)
+
+    if request.method == "POST":
+        form = CityForm(request.POST)  # request.POST.get("name")
+        if form.is_valid():
+            new_city = form.cleaned_data["name"]
+            if not City.objects.filter(name=new_city).exists():
+                r = requests.get(url.format(new_city))
+                if r.status_code == 200:
+                    form.save()
+                    messages.success(request, "City added succesfully!")
+                else:
+                    messages.warning(request, "City does not exist.")
+            else:
+                messages.warning(request, "City already exists.")
+            return redirect("home")
+
     city_data = []
     for city in cities:
         print(city)
         r = requests.get(url.format(city))
+        # print(r.status_code)
         content = r.json()
 
         weather_data = {
